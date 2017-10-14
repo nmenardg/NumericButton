@@ -1,0 +1,11 @@
+{
+  "name": "NumericButton",
+  "version": "1.0.0",
+  "description": "jQuery plugin for buttons outputting a numeric value",
+  "main": "jquery.numericbutton.js",
+  "author": "Nicolas Ménard-Guy",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^2.1.4"
+  }
+}
