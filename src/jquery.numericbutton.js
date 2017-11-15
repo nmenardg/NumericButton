@@ -8,7 +8,8 @@
             type: 'rotation',
             changedCallback: function(el, rotation){},
             min: 0,
-            max: 100
+            max: 359,
+            step: 5
         }, options);
 
         if(settings.type === 'rotation'){
@@ -25,28 +26,31 @@
         var initialY = 0;
         var body = $('body');
 
-        var rotate = function(angle, element){
+        var rotate = function(pixels, element){
+            var angle = pixels * settings.step;
             if(angle < settings.min){
                 angle = settings.min;
             } else if(angle > settings.max){
                 angle = settings.max;
             }
-            element.data('rotation', angle);
-            element.css('transform', 'rotate('+angle*3.6+'deg)');
+            element.data('rotation', angle/settings.step);
+            element.css('transform', 'rotate(' + angle + 'deg)');
             settings.changedCallback(element, angle);
         };
 
         var bodyMouseMove = function(e){
             if(dragged){
-                var angle = initialY - e.pageY;
+                var angle = initialY - (e.pageY || e.originalEvent.touches[0].pageY);
                 rotate(angle, dragged);
             }
         };
 
         var bodyMouseUp = function(e){
             dragged = null;
-            body.off('mouvemove', bodyMouseMove);
+            body.off('mousemove', bodyMouseMove);
+            body.off('touchmove', bodyMouseMove);
             body.off('mouseup mouseleave', bodyMouseUp);
+            body.off('touchend', bodyMouseUp);
         };
 
         if(settings.min != 0){
@@ -58,6 +62,14 @@
             initialY = e.pageY + (dragged.data('rotation') || 0);
             body.on('mousemove', bodyMouseMove);
             body.on('mouseup mouseleave', bodyMouseUp);
+        });
+
+        self.on('touchstart', function(e){
+            dragged = self;
+            initialY = e.originalEvent.touches[0].pageY + (dragged.data('rotation') || 0);
+            body.on('touchmove', bodyMouseMove);
+            body.on('touchend', bodyMouseUp);
+            e.preventDefault();
         });
     }
 
